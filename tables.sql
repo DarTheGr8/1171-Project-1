@@ -109,7 +109,7 @@ DELIMITER ','
 CSV HEADER;
 
 --queries
--what are the faculties at ub end in S
+--what are the faculties at ub end in S
 
 SELECT faculty_id, faculty_name
 FROM Faculties
