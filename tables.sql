@@ -1,14 +1,16 @@
---this file is located in the /My files/Linux
---files/darwyne files/tables
+--Darwyne Azueta Project 1 sql
+--introduction to database
 
+--drop database if exists
 DROP DATABASE IF EXISTS courses;
-
+--create database courses
+CREATE DATABASE courses;
+--create role coursese
+CREATE ROLE courses;
+--choose database courses in postgress
+\c courses;
 
 --creating tables
-CREATE DATABASE courses;
-
-
-
 CREATE TABLE faculties(
   faculty_id VARCHAR(4) PRIMARY KEY,
   faculty_name VARCHAR(100) NOT NULL,
@@ -77,7 +79,7 @@ CREATE TABLE courses_programs (
     REFERENCES courses (course_id)
 );
 
---importing tables
+--importing tables to postgres sql using copy commands
 COPY faculties
 FROM '/home/darwyne/Downloads/Project1/faculties.csv'
 DELIMITER ','
@@ -108,20 +110,22 @@ FROM '/home/darwyne/ubuntu/Documents/project1/courses_programs.csv'
 DELIMITER ','
 CSV HEADER;
 
---queries
---what are the faculties at ub end in S
+--Queries
+--3. What are the faculties at ub end in S
 
 SELECT faculty_id, faculty_name
 FROM Faculties
 WHERE faculty_id
 LIKE '%S';
 
---what prog are offeren in belize
+--4. What prog are offeren in belize
+
 SELECT program_id, program_name, program_location
 FROM Programs
 WHERE program_location = 'Belize City';
 
---what progs does ms vernelle offer
+--5. What progs does ms vernelle offer
+
 SELECT C.course_id, C.code, C.year, C.semester, C.section, C.title AS course_name, I.instructor_id, I.instructor_name
 FROM Courses AS C
 JOIN Instructors AS I
@@ -129,30 +133,44 @@ ON C.instructor_id = I.instructor_id
 WHERE I.instructor_name = 'Vernelle Sylvester'
 GROUP BY C.course_id, I.instructor_id;
 
---which instructors have a masters degree
+--6. Which instructors have a masters degree
+
 SELECT instructor_id, instructor_name, degree
 FROM Instructors
-WHERE degree = 'M.SC.';
+WHERE degree = 'M.Sc.';
 
---what are prerequisites for programming2
+--7. What are prerequisites for programming2
 
-SELECT C.course_id, C.code, C.title, P.prereq_id
+SELECT C.course_id, C.code, C.title, P.prerequisite_id
 FROM Courses AS C
 JOIN pre_requisites AS P
 ON C.course_id = P.course_id
-WHERE C.title = 'Principles of Programming 2';
+WHERE C.title = 'Priciples of Programming 2';
 
 --8. List the code, year, semester, section and title for all courses.
 
-SELECT *
-FROM COURSES
-WHERE = 'course_code', 'year', 'semester', course_title, 
+SELECT code, year, semester, section, title
+FROM courses;
 
 
 --9. list the program_name and code, year, semester section and title for all courses in the AINT program.
 
-SELECT
-FROM 
+SELECT P.program_id, P.program_name, C.code, C.year, C.semester, C.section, C.title AS course_name
+FROM programs AS P
+JOIN courses_programs AS CP
+ON P.program_id = CP.program_id
+JOIN courses AS C
+ON CP.course_id = C.course_id 
+WHERE P.program_id = 'AINT';
 
 --10. List the faculty_name and code, year, semester section and title for all courses offered by FST. *hint join 4 tables
 
+SELECT F.faculty_id, F.faculty_name, C.year, C.semester, C.section, C.title AS course_name
+FROM faculties AS F
+JOIN programs AS P
+ON F.faculty_id = P.faculty_id
+JOIN courses_programs AS CP
+ON P.program_id = CP.program_id
+JOIN courses AS C
+ON CP.course_id = C.course_id
+WHERE F.faculty_id = 'FST';
